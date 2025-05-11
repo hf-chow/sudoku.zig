@@ -21,3 +21,37 @@ fn generate_cells() [81][]const u8 {
     }
     return result;
 }
+
+fn generate_unit_list() [27][9][]const u8 {
+    var result: [27][9][]const u8 {
+        var idx: usize = 0;
+    }
+    const row_groups = [_][]const u8{ "ABC", "DEF", "GHI" };
+    const col_groups = [_][]const u8{ "123", "456", "789" };
+    for (rows_groups) |rg| {
+        for (col_groups) |cg| {
+            var box_idx: usize = 0;
+            for (rg) |r| {
+                for (cg) |c| {
+                    result[idx][box_idx] = &[_]u8{ r, c};
+                    box_idx += 1;
+                }
+            }
+            idx += 1;
+        }
+    }
+    for (cols) |c| {
+        for (rows, 0..) |r, i| {
+            result[idx][i] = &[_]u8{ r, c };
+        }
+        idx += 1;
+    }
+
+    for (rows) |r| {
+        for (cols, 0..) |c, i| {
+            result[idx][i] = &[_]u8{ r, c };
+        }
+        idx += 1;
+    }
+    return result;
+}
