@@ -2,10 +2,9 @@ const std = @import("std");
 
 const Board = [9][9]u8;
 
-const ParsingError = error{
+pub const ParsingError = error{
     MalformedBoard,
-    NotInteger,
-    NotWithinRange,
+    InvalidCellValue,
 };
 
 pub fn getBoxNumber(i: usize) u8 {
@@ -21,6 +20,9 @@ pub fn parse(input: []const u8) !Board {
     }
     var board: Board = undefined;
     for (0.., input) |i, elem| {
+        if (elem < '0' or elem > '9') {
+            return error.InvalidCellValue;
+        }
         const row = i / 9;
         const col = i % 9;
         board[row][col] = elem;
