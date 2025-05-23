@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const Board = [9][9]u8;
 
 const ParsingError = error{
@@ -14,11 +15,24 @@ pub fn getBoxNumber(i: usize) u8 {
     return @intCast(box_num);
 }
 
-//fn parse(input: []const u8) !Board {
-//    if (input.len != 81) {
-//        return error.MalformedBoard;
-//    }
-//    for (input, 0..) |cell, index| {
-//
-//    }
-//}
+pub fn parse(input: []const u8) !Board {
+    if (input.len != 81) {
+        return error.MalformedBoard;
+    }
+    var board: Board = undefined;
+    for (0.., input) |i, elem| {
+        const row = i / 9;
+        const col = i % 9;
+        board[row][col] = elem;
+    }
+    return board;
+}
+
+pub fn printBoard(board: Board) void {
+    for (0..9) |row| {
+        for (0..9) |col| {
+            std.debug.print("{c} ", .{board[row][col]});
+        }
+        std.debug.print("\n", .{});
+    }
+}
