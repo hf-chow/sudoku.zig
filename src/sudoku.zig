@@ -7,7 +7,10 @@ pub const ParsingError = error{
     InvalidCellValue,
 };
 
-pub fn getBoxNumber(i: usize) u8 {
+pub fn getBoxNumber(i: usize) !u8 {
+    if (i > 80) {
+        return error.MalformedBoard;
+    }
     const row = i / 9;
     const col = i % 9;
     const box_num = (row / 3) * 3 + (col / 3);
