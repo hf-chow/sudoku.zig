@@ -17,12 +17,12 @@ pub fn getBoxNumber(i: usize) !u8 {
     return @intCast(box_num);
 }
 
-pub fn checkRow(row: []const u8) !bool {
-    if (row.len != 9) {
+pub fn check(group: []const u8) !bool {
+    if (group.len != 9) {
         return error.MalformedBoard;
     }
     var sorted: [9]u8 = undefined;
-    @memcpy(sorted[0..], row);
+    @memcpy(sorted[0..], group);
     std.mem.sort(u8, sorted[0..], {}, std.sort.asc(u8));
 
     var i: usize = 1;
