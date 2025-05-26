@@ -2,6 +2,36 @@ const std = @import("std");
 const sud = @import("sudoku.zig");
 const expect = std.testing.expect;
 
+//test "test getColumn" {
+//    const board: sud.Board = .{
+//        .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+//        .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+//        .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+//        .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+//        .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+//        .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+//        .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+//        .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+//        .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+//    };
+//    const cols: [9][9]usize = .{
+//        .{ 0, 9, 7, 2, 6, 3, 8, 4, 5 },
+//        .{ 8, 4, 6, 5, 7, 1, 9, 3, 2 },
+//        .{ 5, 2, 3, 9, 8, 4, 6, 7, 1 },
+//        .{ 9, 5, 4, 8, 3, 2, 1, 6, 7 },
+//        .{ 2, 7, 1, 4, 9, 6, 5, 8, 3 },
+//        .{ 3, 6, 8, 1, 5, 7, 4, 2, 9 },
+//        .{ 4, 1, 5, 7, 2, 8, 3, 9, 6 },
+//        .{ 7, 3, 9, 6, 4, 5, 2, 1, 8 },
+//        .{ 6, 8, 2, 3, 1, 9, 7, 5, 4 },
+//    };
+//    for (0..9) |idx| {
+//        const col = try sud.getColumn(board, idx);
+//        std.debug.print("{d}\n", .{col});
+//        try std.testing.expectEqualSlices(usize, col, &cols[idx]);
+//    }
+//}
+//
 test "test getBoxNumber" {
     try expect(try sud.getBoxNumber(0) == 0);
     try expect(try sud.getBoxNumber(3) == 1);
@@ -35,13 +65,13 @@ test "test parsing errors" {
 }
 
 test "test checking" {
-    const valid = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6, 8 };
+    const valid = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6, 8 };
     try expect(try sud.check(&valid) == true);
 
-    const repetition = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6, 9 };
+    const repetition = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6, 9 };
     try expect(try sud.check(&repetition) == false);
 
-    const malformed = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6 };
+    const malformed = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6 };
     try expect(sud.check(&malformed) == sud.ParsingError.MalformedBoard);
 }
 
@@ -57,7 +87,7 @@ test "test boardToBoxes" {
         .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
         .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
     };
-    const expected: [9][9]u8 = .{
+    const expected: [9][9]usize = .{
         .{ 0, 8, 5, 9, 4, 2, 7, 6, 3 },
         .{ 9, 2, 3, 5, 7, 6, 4, 1, 8 },
         .{ 4, 7, 6, 1, 3, 8, 5, 9, 2 },
@@ -70,6 +100,6 @@ test "test boardToBoxes" {
     };
     const boxes = try sud.boardToBoxes(board);
     for (0..8) |i| {
-        try std.testing.expectEqualSlices(u8, &expected[i], &boxes[i]);
+        try std.testing.expectEqualSlices(usize, &expected[i], &boxes[i]);
     }
 }

@@ -1,14 +1,24 @@
 const std = @import("std");
 
-pub const Board = [9][9]u8;
-pub const Boxes = [9][9]u8;
+pub const Board = [9][9]usize;
 
 pub const ParsingError = error{
     MalformedBoard,
     InvalidCellValue,
 };
 
-pub fn getBoxNumber(i: usize) !u8 {
+pub fn getColumn(board: Board, idx: usize) ![]const usize {
+    if (idx > 8) {
+        return error.MalformedBoard;
+    }
+    var col: [9]usize = undefined;
+    for (0..9) |row| {
+        col[row] = board[row][idx];
+    }
+    return col[0..];
+}
+
+pub fn getBoxNumber(i: usize) !usize {
     if (i > 80) {
         return error.MalformedBoard;
     }
@@ -18,9 +28,9 @@ pub fn getBoxNumber(i: usize) !u8 {
     return @intCast(box_num);
 }
 
-pub fn boardToBoxes(board: Board) ![9][9]u8 {
-    var boxes: [9][9]u8 = .{.{0} ** 9} ** 9;
-    var box_counts: [9]u8 = .{0} ** 9;
+pub fn boardToBoxes(board: Board) ![9][9]usize {
+    var boxes: [9][9]usize = .{.{0} ** 9} ** 9;
+    var box_counts: [9]usize = .{0} ** 9;
     for (0..81) |i| {
         const row = i / 9;
         const col = i % 9;
@@ -32,13 +42,13 @@ pub fn boardToBoxes(board: Board) ![9][9]u8 {
     return boxes;
 }
 
-pub fn check(group: []const u8) !bool {
+pub fn check(group: []const usize) !bool {
     if (group.len != 9) {
         return error.MalformedBoard;
     }
-    var sorted: [9]u8 = undefined;
+    var sorted: [9]usize = undefined;
     @memcpy(sorted[0..], group);
-    std.mem.sort(u8, sorted[0..], {}, std.sort.asc(u8));
+    std.mem.sort(usize, sorted[0..], {}, std.sort.asc(usize));
 
     var i: usize = 1;
     while (i < 9) : (i += 1) {
@@ -72,10 +82,4 @@ pub fn printBoard(board: Board) void {
         }
         std.debug.print("\n", .{});
     }
-}
-
-pub fn main() void {
-    const input = "085923476942576138763418592259841763678395241314267859896154327437682915521739684";
-    const board = parse(input);
-    printBoard(board);
 }
