@@ -36,8 +36,14 @@ pub fn parse(input: []const u8) !Board {
 pub fn printBoard(board: Board) void {
     for (0..9) |row| {
         for (0..9) |col| {
-            std.debug.print("{c} ", .{board[row][col]});
+            std.debug.print("{d} ", .{board[row][col]});
         }
         std.debug.print("\n", .{});
     }
+}
+
+pub fn main() void {
+    const input = "085923476942576138763418592259841763678395241314267859896154327437682915521739684";
+    const board = parse(input);
+    printBoard(board);
 }
