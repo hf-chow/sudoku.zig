@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub const Board = [9][9]u8;
+pub const Boxes = [9][9]u8;
 
 pub const ParsingError = error{
     MalformedBoard,
@@ -15,6 +16,20 @@ pub fn getBoxNumber(i: usize) !u8 {
     const col = i % 9;
     const box_num = (row / 3) * 3 + (col / 3);
     return @intCast(box_num);
+}
+
+pub fn boardToBoxes(board: Board) ![9][9]u8 {
+    var boxes: [9][9]u8 = .{.{0} ** 9} ** 9;
+    var box_counts: [9]u8 = .{0} ** 9;
+    for (0..81) |i| {
+        const row = i / 9;
+        const col = i % 9;
+        const box_num = try getBoxNumber(i);
+        const cell_idx = box_counts[box_num];
+        boxes[box_num][cell_idx] = board[row][col];
+        box_counts[box_num] += 1;
+    }
+    return boxes;
 }
 
 pub fn check(group: []const u8) !bool {
