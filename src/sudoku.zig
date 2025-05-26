@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const Board = [9][9]u8;
+pub const Board = [9][9]u8;
 
 pub const ParsingError = error{
     MalformedBoard,
@@ -21,14 +21,14 @@ pub fn parse(input: []const u8) !Board {
     if (input.len != 81) {
         return error.MalformedBoard;
     }
-    var board: Board = undefined;
+    var board: Board = .{.{0} ** 9} ** 9;
     for (0.., input) |i, elem| {
         if (elem < '0' or elem > '9') {
             return error.InvalidCellValue;
         }
         const row = i / 9;
         const col = i % 9;
-        board[row][col] = elem;
+        board[row][col] = elem - '0';
     }
     return board;
 }
