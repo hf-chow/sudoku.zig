@@ -33,3 +33,14 @@ test "test parsing errors" {
     try expect(sud.parse("64") == sud.ParsingError.MalformedBoard);
     try expect(sud.parse("abcd23476942576138763418592259841763678395241314267859896154327437682915521739684") == sud.ParsingError.InvalidCellValue);
 }
+
+test "test checkRow" {
+    const valid_row = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6, 8 };
+    try std.testing.expectEqual(true, try sud.checkRow(&valid_row));
+
+    const repetition = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6, 9 };
+    try expect(try sud.checkRow(&repetition) == false);
+
+    const malformed_row = [_]u8{ 9, 3, 4, 2, 1, 5, 7, 6 };
+    try expect(sud.checkRow(&malformed_row) == sud.ParsingError.MalformedBoard);
+}

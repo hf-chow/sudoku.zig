@@ -17,6 +17,23 @@ pub fn getBoxNumber(i: usize) !u8 {
     return @intCast(box_num);
 }
 
+pub fn checkRow(row: []const u8) !bool {
+    if (row.len != 9) {
+        return error.MalformedBoard;
+    }
+    var sorted: [9]u8 = undefined;
+    @memcpy(sorted[0..], row);
+    std.mem.sort(u8, sorted[0..], {}, std.sort.asc(u8));
+
+    var i: usize = 1;
+    while (i < 9) : (i += 1) {
+        if (sorted[i] != 0 and sorted[i] == sorted[i - 1]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 pub fn parse(input: []const u8) !Board {
     if (input.len != 81) {
         return error.MalformedBoard;
