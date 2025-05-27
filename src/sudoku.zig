@@ -11,14 +11,14 @@ pub fn getColumn(board: Board, idx: usize) ![]const usize {
     if (idx > 8) {
         return error.MalformedBoard;
     }
-    var col: [9]usize = undefined;
+    var col: [9]usize = .{0} ** 9;
     for (0..9) |row| {
         col[row] = board[row][idx];
     }
     return col[0..];
 }
 
-pub fn getBoxNumber(i: usize) !usize {
+pub fn getBoxNumber(i: usize) !u8 {
     if (i > 80) {
         return error.MalformedBoard;
     }
