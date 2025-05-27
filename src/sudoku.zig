@@ -1,10 +1,22 @@
 const std = @import("std");
 
-pub const Board = [9][9]usize;
-
 pub const ParsingError = error{
     MalformedBoard,
     InvalidCellValue,
+};
+
+pub const UpdateError = error{
+    NonEmptyCell,
+};
+
+pub const Board = struct {
+    state: [9][9]usize,
+    fn fillCell(self: *Board, row: usize, col: usize, val: usize) !void {
+        if (!self.state[row][col] != 0) {
+            return error.NonEmptyCell;
+        }
+        self.state[row][col] = val;
+    }
 };
 
 pub fn getColumn(board: Board, idx: usize) ![9]usize {
@@ -13,7 +25,7 @@ pub fn getColumn(board: Board, idx: usize) ![9]usize {
     }
     var col: [9]usize = .{0} ** 9;
     for (0..9) |row| {
-        col[row] = board[row][idx];
+        col[row] = board.state[row][idx];
     }
     return col;
 }
@@ -36,7 +48,7 @@ pub fn boardToBoxes(board: Board) ![9][9]usize {
         const col = i % 9;
         const box_num = try getBoxNumber(i);
         const cell_idx = box_counts[box_num];
-        boxes[box_num][cell_idx] = board[row][col];
+        boxes[box_num][cell_idx] = board.state[row][col];
         box_counts[box_num] += 1;
     }
     return boxes;
@@ -66,14 +78,16 @@ pub fn parse(input: []const u8) !Board {
     if (input.len != 81) {
         return error.MalformedBoard;
     }
-    var board: Board = .{.{0} ** 9} ** 9;
+    var board = Board{
+        .state = .{.{0} ** 9} ** 9,
+    };
     for (0.., input) |i, elem| {
         if (elem < '0' or elem > '9') {
             return error.InvalidCellValue;
         }
         const row = i / 9;
         const col = i % 9;
-        board[row][col] = elem - '0';
+        board.state[row][col] = elem - '0';
     }
     return board;
 }
@@ -81,7 +95,7 @@ pub fn parse(input: []const u8) !Board {
 pub fn printBoard(board: Board) void {
     for (0..9) |row| {
         for (0..9) |col| {
-            std.debug.print("{d} ", .{board[row][col]});
+            std.debug.print("{d} ", .{board.state[row][col]});
         }
         std.debug.print("\n", .{});
     }
@@ -91,7 +105,7 @@ pub fn checkBoard(board: Board) !bool {
     const boxes = try boardToBoxes(board);
     for (0..9) |i| {
         const curr_col = try getColumn(board, i);
-        const curr_row = board[i];
+        const curr_row = board.state[i];
         const curr_box = boxes[i];
 
         if (try check(&curr_col) and try check(&curr_row) and try check(&curr_box)) {
