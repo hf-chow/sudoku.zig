@@ -2,6 +2,47 @@ const std = @import("std");
 const sud = @import("sudoku.zig");
 const expect = std.testing.expect;
 
+test "test checkBoard" {
+    const correct_board: sud.Board = .{
+        .{ 1, 8, 5, 9, 2, 3, 4, 7, 6 },
+        .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+        .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+        .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+        .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+        .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+        .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+        .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+        .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+    };
+
+    const incomplete_board: sud.Board = .{
+        .{ 9, 8, 5, 9, 2, 3, 4, 7, 6 },
+        .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+        .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+        .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+        .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+        .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+        .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+        .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+        .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+    };
+
+    const incorrect_board: sud.Board = .{
+        .{ 9, 8, 5, 9, 2, 3, 4, 7, 6 },
+        .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+        .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+        .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+        .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+        .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+        .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+        .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+        .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+    };
+    try expect(try sud.checkBoard(incomplete_board) == false);
+    try expect(try sud.checkBoard(incorrect_board) == false);
+    try expect(try sud.checkBoard(correct_board) == true);
+}
+
 test "test getColumn" {
     const board: sud.Board = .{
         .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
@@ -27,7 +68,7 @@ test "test getColumn" {
     };
     for (0..9) |i| {
         const col = try sud.getColumn(board, i);
-        try std.testing.expectEqualSlices(usize, col, &cols[i]);
+        try std.testing.expectEqualSlices(usize, &col, &cols[i]);
     }
 }
 

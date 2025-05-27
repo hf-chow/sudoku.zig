@@ -7,7 +7,7 @@ pub const ParsingError = error{
     InvalidCellValue,
 };
 
-pub fn getColumn(board: Board, idx: usize) ![]const usize {
+pub fn getColumn(board: Board, idx: usize) ![9]usize {
     if (idx > 8) {
         return error.MalformedBoard;
     }
@@ -15,7 +15,7 @@ pub fn getColumn(board: Board, idx: usize) ![]const usize {
     for (0..9) |row| {
         col[row] = board[row][idx];
     }
-    return col[0..];
+    return col;
 }
 
 pub fn getBoxNumber(i: usize) !u8 {
@@ -52,6 +52,9 @@ pub fn check(group: []const usize) !bool {
 
     var i: usize = 1;
     while (i < 9) : (i += 1) {
+        if (sorted[i] == 0) {
+            return false;
+        }
         if (sorted[i] != 0 and sorted[i] == sorted[i - 1]) {
             return false;
         }
@@ -82,4 +85,20 @@ pub fn printBoard(board: Board) void {
         }
         std.debug.print("\n", .{});
     }
+}
+
+pub fn checkBoard(board: Board) !bool {
+    const boxes = try boardToBoxes(board);
+    for (0..9) |i| {
+        const curr_col = try getColumn(board, i);
+        const curr_row = board[i];
+        const curr_box = boxes[i];
+
+        if (try check(&curr_col) and try check(&curr_row) and try check(&curr_box)) {
+            continue;
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
