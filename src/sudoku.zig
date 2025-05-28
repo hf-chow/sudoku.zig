@@ -11,11 +11,37 @@ pub const UpdateError = error{
 
 pub const Board = struct {
     state: [9][9]usize,
-    fn fillCell(self: *Board, row: usize, col: usize, val: usize) !void {
-        if (!self.state[row][col] != 0) {
+
+    pub fn fillCell(self: *Board, row: usize, col: usize, digit: usize) !void {
+        if (self.state[row][col] != 0) {
             return error.NonEmptyCell;
         }
-        self.state[row][col] = val;
+        self.state[row][col] = digit;
+    }
+
+    fn isValid(self: *Board, row: usize, col: usize, digit: u8) !bool {
+        // check if the incoming digit does not collide with the existing one
+        for (0..9) |r| {
+            if (r != row and self.state[r][col] == digit) {
+                return false;
+            }
+        }
+        for (0..9) |c| {
+            if (c != col and self.state[row][c] == digit) {
+                return false;
+            }
+        }
+
+        const box_row = (row / 3) * 3;
+        const box_col = (col / 3) * 3;
+        for (box_row..box_row + 3) |r| {
+            for (box_col..box_col + 3) |c| {
+                if (r != row and c != col and self.state[r][c] == digit) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 };
 
@@ -58,16 +84,17 @@ pub fn check(group: []const usize) !bool {
     if (group.len != 9) {
         return error.MalformedBoard;
     }
-    var sorted: [9]usize = undefined;
+    var sorted: [9]usize = .{0} ** 9;
     @memcpy(sorted[0..], group);
     std.mem.sort(usize, sorted[0..], {}, std.sort.asc(usize));
 
     var i: usize = 1;
     while (i < 9) : (i += 1) {
-        if (sorted[i] == 0) {
+        std.debug.print("{any}\n", .{group[0]});
+        if (group[i] == 0) {
             return false;
         }
-        if (sorted[i] != 0 and sorted[i] == sorted[i - 1]) {
+        if (sorted[i] == sorted[i - 1]) {
             return false;
         }
     }

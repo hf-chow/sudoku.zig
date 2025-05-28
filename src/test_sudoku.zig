@@ -2,6 +2,23 @@ const std = @import("std");
 const sud = @import("sudoku.zig");
 const expect = std.testing.expect;
 
+test "test fillCell" {
+    var incomplete_board = sud.Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    try incomplete_board.fillCell(0, 0, 1);
+    try expect(incomplete_board.state[0][0] == 1);
+}
 test "test checkBoard" {
     const correct_board = sud.Board{
         .state = .{
@@ -19,7 +36,7 @@ test "test checkBoard" {
 
     const incomplete_board = sud.Board{
         .state = .{
-            .{ 9, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
             .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
             .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
             .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
