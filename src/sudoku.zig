@@ -20,57 +20,7 @@ pub const Board = struct {
         self.state[row][col] = digit;
     }
 
-    pub fn solve(self: *Board) !bool {
-        if (!(try self.solveRecusive())) {
-            return error.NoSolution;
-        }
-        if (!(try checkBoard(self.*))) {
-            return error.InvalidCellValue;
-        }
-        return try self.solveRecursive();
-    }
-
-    fn solveRecursive(self: *Board) !bool {
-        // find the empty cell to fill
-        var row: usize = 0;
-        var col: usize = 0;
-        var found = false;
-        for (0..9) |r| {
-            for (0..9) |c| {
-                if (self.state[r][c] == 0) {
-                    row = r;
-                    col = c;
-                    found = true;
-                    break;
-                }
-            }
-            if (found) break;
-        }
-
-        // base case
-        if (!found) {
-            return true;
-        }
-
-        // DFS with backtracking
-        for (1..10) |digit| {
-            const d: u8 = @intCast(digit);
-            if (try isValid(self, row, col, d)) {
-                // try to fill cell
-                try self.fillCell(row, col, d);
-                if (try self.solveRecursive()) {
-                    return true;
-                } else {
-                    // restoring the cell to empty
-                    try self.fillCell(row, col, 0);
-                }
-            }
-        }
-        // backtracking
-        return false;
-    }
-
-    fn isValid(self: *Board, row: usize, col: usize, digit: u8) !bool {
+    fn isValid(self: *const Board, row: usize, col: usize, digit: u8) !bool {
         // check if the incoming digit does not collide with the existing one
         for (0..9) |r| {
             if (r != row and self.state[r][col] == digit) {
@@ -95,6 +45,56 @@ pub const Board = struct {
         return true;
     }
 };
+
+pub fn solve(board: *Board) !bool {
+    if (!(try solveRecursive(board))) {
+        return error.NoSolution;
+    }
+    if (!(try checkBoard(board.*))) {
+        return error.InvalidCellValue;
+    }
+    return try solveRecursive(board);
+}
+
+fn solveRecursive(board: *Board) !bool {
+    // find the empty cell to fill
+    var row: usize = 0;
+    var col: usize = 0;
+    var found = false;
+    for (0..9) |r| {
+        for (0..9) |c| {
+            if (board.state[r][c] == 0) {
+                row = r;
+                col = c;
+                found = true;
+                break;
+            }
+        }
+        if (found) break;
+    }
+
+    // base case
+    if (!found) {
+        return true;
+    }
+
+    // DFS with backtracking
+    for (1..10) |digit| {
+        const d: u8 = @intCast(digit);
+        if (try board.isValid(row, col, d)) {
+            // try to fill cell
+            try board.fillCell(row, col, d);
+            if (try solveRecursive(board)) {
+                return true;
+            } else {
+                // restoring the cell to empty
+                try board.fillCell(row, col, 0);
+            }
+        }
+    }
+    // backtracking
+    return false;
+}
 
 pub fn getColumn(board: Board, idx: usize) ![9]usize {
     if (idx > 8) {
@@ -141,7 +141,6 @@ pub fn check(group: []const usize) !bool {
 
     var i: usize = 1;
     while (i < 9) : (i += 1) {
-        std.debug.print("{any}\n", .{group[0]});
         if (group[i] == 0) {
             return false;
         }

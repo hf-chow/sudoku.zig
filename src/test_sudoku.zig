@@ -2,6 +2,37 @@ const std = @import("std");
 const sud = @import("sudoku.zig");
 const expect = std.testing.expect;
 
+test "test solve" {
+    var incomplete_board = sud.Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+
+    const solved_board = sud.Board{
+        .state = .{
+            .{ 1, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    try expect(try sud.solve(&incomplete_board) == true);
+    try std.testing.expectEqual(incomplete_board, solved_board);
+}
 test "test fillCell" {
     var incomplete_board = sud.Board{
         .state = .{
