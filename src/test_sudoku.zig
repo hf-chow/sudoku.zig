@@ -92,9 +92,9 @@ test "test checkBoard" {
             .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
         },
     };
-    try expect(try sud.checkBoard(incomplete_board) == false);
-    try expect(try sud.checkBoard(incorrect_board) == false);
     try expect(try sud.checkBoard(correct_board) == true);
+    try expect(try sud.checkBoard(incorrect_board) == false);
+    try expect(try sud.checkBoard(incomplete_board) == false);
 }
 
 test "test getColumn" {
@@ -168,6 +168,9 @@ test "test checking" {
 
     const repetition = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6, 9 };
     try expect(try sud.check(&repetition) == false);
+
+    const empty = [_]usize{ 0, 3, 4, 2, 1, 5, 7, 6, 9 };
+    try expect(try sud.check(&empty) == false);
 
     const malformed = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6 };
     try expect(sud.check(&malformed) == sud.ParsingError.MalformedBoard);

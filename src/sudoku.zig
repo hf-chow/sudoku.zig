@@ -132,6 +132,11 @@ pub fn boardToBoxes(board: Board) ![9][9]usize {
 }
 
 pub fn check(group: []const usize) !bool {
+    for (0..group.len) |i| {
+        if (group[i] == 0) {
+            return false;
+        }
+    }
     if (group.len != 9) {
         return error.MalformedBoard;
     }
@@ -141,9 +146,6 @@ pub fn check(group: []const usize) !bool {
 
     var i: usize = 1;
     while (i < 9) : (i += 1) {
-        if (group[i] == 0) {
-            return false;
-        }
         if (sorted[i] == sorted[i - 1]) {
             return false;
         }
