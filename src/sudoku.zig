@@ -5,8 +5,9 @@ pub const ParsingError = error{
     InvalidCellValue,
 };
 
-pub const UpdateError = error{
+pub const BoardError = error{
     NonEmptyCell,
+    NoSolution,
 };
 
 pub const Board = struct {
@@ -17,6 +18,56 @@ pub const Board = struct {
             return error.NonEmptyCell;
         }
         self.state[row][col] = digit;
+    }
+
+    pub fn solve(self: *Board) !bool {
+        if (!(try self.solveRecusive())) {
+            return error.NoSolution;
+        }
+        if (!(try checkBoard(self.*))) {
+            return error.InvalidCellValue;
+        }
+        return try self.solveRecursive();
+    }
+
+    fn solveRecursive(self: *Board) !bool {
+        // find the empty cell to fill
+        var row: usize = 0;
+        var col: usize = 0;
+        var found = false;
+        for (0..9) |r| {
+            for (0..9) |c| {
+                if (self.state[r][c] == 0) {
+                    row = r;
+                    col = c;
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+
+        // base case
+        if (!found) {
+            return true;
+        }
+
+        // DFS with backtracking
+        for (1..10) |digit| {
+            const d: u8 = @intCast(digit);
+            if (try isValid(self, row, col, d)) {
+                // try to fill cell
+                try self.fillCell(row, col, d);
+                if (try self.solveRecursive()) {
+                    return true;
+                } else {
+                    // restoring the cell to empty
+                    try self.fillCell(row, col, 0);
+                }
+            }
+        }
+        // backtracking
+        return false;
     }
 
     fn isValid(self: *Board, row: usize, col: usize, digit: u8) !bool {
