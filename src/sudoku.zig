@@ -96,7 +96,7 @@ fn solveRecursive(board: *Board) !bool {
     return false;
 }
 
-pub fn getColumn(board: Board, idx: usize) ![9]usize {
+fn getColumn(board: Board, idx: usize) ![9]usize {
     if (idx > 8) {
         return error.MalformedBoard;
     }
@@ -107,7 +107,7 @@ pub fn getColumn(board: Board, idx: usize) ![9]usize {
     return col;
 }
 
-pub fn getBoxNumber(i: usize) !u8 {
+fn getBoxNumber(i: usize) !u8 {
     if (i > 80) {
         return error.MalformedBoard;
     }
@@ -117,7 +117,7 @@ pub fn getBoxNumber(i: usize) !u8 {
     return @intCast(box_num);
 }
 
-pub fn boardToBoxes(board: Board) ![9][9]usize {
+fn boardToBoxes(board: Board) ![9][9]usize {
     var boxes: [9][9]usize = .{.{0} ** 9} ** 9;
     var box_counts: [9]usize = .{0} ** 9;
     for (0..81) |i| {
@@ -131,7 +131,7 @@ pub fn boardToBoxes(board: Board) ![9][9]usize {
     return boxes;
 }
 
-pub fn check(group: []const usize) !bool {
+fn check(group: []const usize) !bool {
     for (0..group.len) |i| {
         if (group[i] == 0) {
             return false;
@@ -203,4 +203,207 @@ pub fn checkBoard(board: Board) !bool {
         }
     }
     return true;
+}
+
+test "test solve" {
+    var incomplete_board = Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+
+    const solved_board = Board{
+        .state = .{
+            .{ 1, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    try std.testing.expectEqual(try solve(&incomplete_board), true);
+    try std.testing.expectEqual(incomplete_board, solved_board);
+}
+test "test fillCell" {
+    var incomplete_board = Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    try incomplete_board.fillCell(0, 0, 1);
+    try std.testing.expectEqual(incomplete_board.state[0][0], 1);
+}
+test "test checkBoard" {
+    const correct_board = Board{
+        .state = .{
+            .{ 1, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+
+    const incomplete_board = Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+
+    const incorrect_board = Board{
+        .state = .{
+            .{ 9, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    try std.testing.expectEqual(try checkBoard(correct_board), true);
+    try std.testing.expectEqual(try checkBoard(incorrect_board), false);
+    try std.testing.expectEqual(try checkBoard(incomplete_board), false);
+}
+
+test "test getColumn" {
+    const board = Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    const cols: [9][9]usize = .{
+        .{ 0, 9, 7, 2, 6, 3, 8, 4, 5 },
+        .{ 8, 4, 6, 5, 7, 1, 9, 3, 2 },
+        .{ 5, 2, 3, 9, 8, 4, 6, 7, 1 },
+        .{ 9, 5, 4, 8, 3, 2, 1, 6, 7 },
+        .{ 2, 7, 1, 4, 9, 6, 5, 8, 3 },
+        .{ 3, 6, 8, 1, 5, 7, 4, 2, 9 },
+        .{ 4, 1, 5, 7, 2, 8, 3, 9, 6 },
+        .{ 7, 3, 9, 6, 4, 5, 2, 1, 8 },
+        .{ 6, 8, 2, 3, 1, 9, 7, 5, 4 },
+    };
+    for (0..9) |i| {
+        const col = try getColumn(board, i);
+        try std.testing.expectEqualSlices(usize, &col, &cols[i]);
+    }
+}
+
+test "test getBoxNumber" {
+    try std.testing.expectEqual(try getBoxNumber(0), 0);
+    try std.testing.expectEqual(try getBoxNumber(3), 1);
+    try std.testing.expectEqual(try getBoxNumber(80), 8);
+}
+
+test "test getBoxNumber errors" {
+    try std.testing.expectEqual(getBoxNumber(81), ParsingError.MalformedBoard);
+}
+
+test "parse valid input" {
+    const input = "085923476942576138763418592259841763678395241314267859896154327437682915521739684";
+    const expected = Board{
+        .state = .{
+            .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+            .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+            .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+            .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+            .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+            .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+            .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+            .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+            .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+        },
+    };
+    const board = try parse(input);
+    try std.testing.expectEqual(expected, board);
+}
+
+test "test parsing errors" {
+    try std.testing.expectEqual(parse("64"), ParsingError.MalformedBoard);
+    try std.testing.expectEqual(parse("abcd23476942576138763418592259841763678395241314267859896154327437682915521739684"), ParsingError.InvalidCellValue);
+}
+
+test "test checking" {
+    const valid = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6, 8 };
+    try std.testing.expectEqual(try check(&valid), true);
+
+    const repetition = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6, 9 };
+    try std.testing.expectEqual(try check(&repetition), false);
+
+    const empty = [_]usize{ 0, 3, 4, 2, 1, 5, 7, 6, 9 };
+    try std.testing.expectEqual(try check(&empty), false);
+
+    const malformed = [_]usize{ 9, 3, 4, 2, 1, 5, 7, 6 };
+    try std.testing.expectEqual(check(&malformed), ParsingError.MalformedBoard);
+}
+
+test "test boardToBoxes" {
+    const board = Board{ .state = .{
+        .{ 0, 8, 5, 9, 2, 3, 4, 7, 6 },
+        .{ 9, 4, 2, 5, 7, 6, 1, 3, 8 },
+        .{ 7, 6, 3, 4, 1, 8, 5, 9, 2 },
+        .{ 2, 5, 9, 8, 4, 1, 7, 6, 3 },
+        .{ 6, 7, 8, 3, 9, 5, 2, 4, 1 },
+        .{ 3, 1, 4, 2, 6, 7, 8, 5, 9 },
+        .{ 8, 9, 6, 1, 5, 4, 3, 2, 7 },
+        .{ 4, 3, 7, 6, 8, 2, 9, 1, 5 },
+        .{ 5, 2, 1, 7, 3, 9, 6, 8, 4 },
+    } };
+    const expected: [9][9]usize = .{
+        .{ 0, 8, 5, 9, 4, 2, 7, 6, 3 },
+        .{ 9, 2, 3, 5, 7, 6, 4, 1, 8 },
+        .{ 4, 7, 6, 1, 3, 8, 5, 9, 2 },
+        .{ 2, 5, 9, 6, 7, 8, 3, 1, 4 },
+        .{ 8, 4, 1, 3, 9, 5, 2, 6, 7 },
+        .{ 7, 6, 3, 2, 4, 1, 8, 5, 9 },
+        .{ 8, 9, 6, 4, 3, 7, 5, 2, 1 },
+        .{ 1, 5, 4, 6, 8, 2, 7, 3, 9 },
+        .{ 3, 2, 7, 9, 1, 5, 6, 8, 4 },
+    };
+    const boxes = try boardToBoxes(board);
+    for (0..8) |i| {
+        try std.testing.expectEqualSlices(usize, &expected[i], &boxes[i]);
+    }
 }
