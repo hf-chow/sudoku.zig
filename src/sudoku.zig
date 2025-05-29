@@ -83,12 +83,12 @@ fn solveRecursive(board: *Board) !bool {
         const d: u8 = @intCast(digit);
         if (try board.isValid(row, col, d)) {
             // try to fill cell
-            try board.fillCell(row, col, d);
+            board.state[row][col] = d;
             if (try solveRecursive(board)) {
                 return true;
             } else {
                 // restoring the cell to empty
-                try board.fillCell(row, col, 0);
+                board.state[row][col] = 0;
             }
         }
     }
@@ -172,12 +172,21 @@ pub fn parse(input: []const u8) !Board {
 }
 
 pub fn printBoard(board: Board) void {
+    for (0..9) |_| {
+        std.debug.print("--", .{});
+    }
+    std.debug.print("\n", .{});
+
     for (0..9) |row| {
         for (0..9) |col| {
             std.debug.print("{d} ", .{board.state[row][col]});
         }
         std.debug.print("\n", .{});
     }
+    for (0..9) |_| {
+        std.debug.print("--", .{});
+    }
+    std.debug.print("\n", .{});
 }
 
 pub fn checkBoard(board: Board) !bool {
