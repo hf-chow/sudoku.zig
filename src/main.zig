@@ -3,7 +3,7 @@ const sdk = @import("sudoku.zig");
 const psr = @import("parser.zig");
 
 pub fn main() !void {
-    const file_path = "../problems/problems.csv";
+    const file_path = "../problems/test_problems.csv";
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
@@ -17,7 +17,7 @@ pub fn main() !void {
 
     const parse_end = timer.read();
 
-    std.debug.print("Solving 9 million problems...\n", .{});
+    std.debug.print("Solving problems...\n", .{});
     const solve_start = timer.read();
 
     defer {
@@ -37,8 +37,10 @@ pub fn main() !void {
 
     const parse_time_ns = parse_end - parse_start;
     const solve_time_ns = solve_end - solve_start;
+    const average_time_ns = solve_time_ns / problems.len;
     // Report results
     std.debug.print("\nBenchmark Results:\n", .{});
     std.debug.print("Total parsing time: {:.2} seconds\n", .{@as(f64, @floatFromInt(parse_time_ns)) / 1_000_000_000.0});
     std.debug.print("Total solving time: {:.2} seconds\n", .{@as(f64, @floatFromInt(solve_time_ns)) / 1_000_000_000.0});
+    std.debug.print("Average solving time: {:.2} seconds\n", .{@as(f64, @floatFromInt(average_time_ns)) / 1_000_000_000.0});
 }
